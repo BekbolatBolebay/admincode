@@ -1,23 +1,25 @@
--- Create admin_users table
-CREATE TABLE IF NOT EXISTS public.admin_users (
-  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email text NOT NULL UNIQUE,
-  full_name text,
-  role text DEFAULT 'admin',
-  created_at timestamptz DEFAULT now()
+-- Create admin_users table to manage admin access
+CREATE TABLE IF NOT EXISTS admin_users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  full_name TEXT,
+  role TEXT DEFAULT 'admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Enable RLS
-ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
--- Allow admins to view only themselves
-CREATE POLICY "Allow admin to view themselves"
-  ON public.admin_users
-  FOR SELECT
+-- Drop existing policies to prevent errors on re-run
+DROP POLICY IF EXISTS "Admin users can view their own profile" ON admin_users;
+DROP POLICY IF EXISTS "Admin users can update their own profile" ON admin_users;
+
+-- Admin users can view their own profile
+CREATE POLICY "Admin users can view their own profile"
+  ON admin_users FOR SELECT
   USING (auth.uid() = id);
 
--- Allow admins to update only themselves
-CREATE POLICY "Allow admin to update themselves"
-  ON public.admin_users
-  FOR UPDATE
+-- Admin users can update their own profile
+CREATE POLICY "Admin users can update their own profile"
+  ON admin_users FOR UPDATE
   USING (auth.uid() = id);
