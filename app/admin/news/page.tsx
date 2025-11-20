@@ -14,6 +14,16 @@ export default async function NewsPage() {
 
   if (error) {
     console.error("Error fetching news:", error)
+    if (error.code === "PGRST205") {
+      return (
+        <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-red-800">Database Setup Required</h3>
+          <p className="text-red-600 mt-2">
+            The news table was not found. Please run the SQL scripts in the "Scripts" section to set up your database.
+          </p>
+        </div>
+      )
+    }
   }
 
   return (
