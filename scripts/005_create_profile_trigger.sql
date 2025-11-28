@@ -1,4 +1,3 @@
--- Create trigger to auto-create admin_users profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_admin_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -6,6 +5,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
+  RAISE NOTICE 'New user: %, email: %', new.id, new.email;
+
   INSERT INTO public.admin_users (id, email, full_name)
   VALUES (
     new.id,
@@ -17,11 +18,3 @@ BEGIN
   RETURN new;
 END;
 $$;
-
-DROP TRIGGER IF EXISTS on_admin_user_created ON auth.users;
-
-CREATE TRIGGER on_admin_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_admin_user();
-
