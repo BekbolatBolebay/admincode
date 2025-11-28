@@ -10,10 +10,6 @@ CREATE TABLE IF NOT EXISTS admin_users (
 -- Enable RLS
 ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies to prevent errors on re-run
-DROP POLICY IF EXISTS "Admin users can view their own profile" ON admin_users;
-DROP POLICY IF EXISTS "Admin users can update their own profile" ON admin_users;
-
 -- Admin users can view their own profile
 CREATE POLICY "Admin users can view their own profile"
   ON admin_users FOR SELECT
